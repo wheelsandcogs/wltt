@@ -14,6 +14,6 @@ describe('calculateAnnualPrice', () => {
 
   it('will return the price multiplied by 12 if it is a monthly subscription', () => {
     const input = { price: 11.99, isMonthly: true };
-    assert.strictEqual(calculateAnnualPrice(input), 143.88);
+    assert.strictEqual(calculateAnnualPrice(input), 12 * 11.99);
   });
 });

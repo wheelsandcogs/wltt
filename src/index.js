@@ -1,42 +1,27 @@
 import { Command } from 'commander';
 import logger from './logger.js';
-import getDOM from './get-dom.js';
-import { getValue, calculateAnnualPrice, sortByAnnualPriceDesc } from './utils.js';
+import * as dom from './dom.js';
+import { sortByAnnualPriceDesc } from './utils.js';
 
 /**
  * Requests the HTML from the specified URL and outputs the available
  * subscription packages if present as a JSON string.
  */
 async function run(url) {
-  logger.info(`fetching DOM from ${url}`);
-  const dom = await getDOM(url);
-  const { document } = dom.window;
-  const packages = [];
+  try {
+    logger.info(`fetching DOM from ${url}`);
+    const document = await dom.fetch(url);
+    const packages = dom.parse(document);
+    logger.info(`found ${packages.length} subscription options`);
 
-  const elements = document.querySelectorAll('.package');
+    const sortedPackages = sortByAnnualPriceDesc(packages);
 
-  if (elements.length === 0) {
-    logger.error(`no subscription data found at ${url}`);
-    process.exit(1);
+    logger.info(JSON.stringify(sortedPackages, null, 2));
+    logger.info('scraping complete.');
+    process.exit(0);
+  } catch (err) {
+    logger.error(err.message);
   }
-
-  logger.info(`found ${elements.length} subscription options`);
-
-  elements.forEach((packageDiv) => {
-    const subscription = {
-      title: packageDiv.querySelector('.header h3').textContent,
-      description: packageDiv.querySelector('.package-description').innerHTML, // keep linebreaks
-      price: getValue(packageDiv.querySelector('.price-big').textContent),
-      isMonthly: !packageDiv.querySelector('.package-data').textContent.includes('Annual'),
-      discount: getValue(packageDiv.querySelector('.package-price p')?.textContent),
-    };
-
-    subscription.annualPrice = calculateAnnualPrice(subscription);
-    packages.push(subscription);
-  });
-
-  const sortedPackages = sortByAnnualPriceDesc(packages);
-  logger.info(JSON.stringify(sortedPackages, null, 2));
 }
 
 async function main() {
