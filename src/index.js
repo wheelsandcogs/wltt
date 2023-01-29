@@ -21,6 +21,7 @@ async function run(url) {
     process.exit(0);
   } catch (err) {
     logger.error(err.message);
+    process.exit(1);
   }
 }
 
