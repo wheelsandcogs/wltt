@@ -4,6 +4,9 @@
   "type": "module",
   "description": "Technical test for WL",
   "main": "src/index.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "dev": "node src/index.js",
     "test": "npm run test:lint && npm run test:unit",
