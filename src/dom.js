@@ -18,7 +18,8 @@ export async function fetch(url) {
 }
 
 /**
- * Parse the DOM to find the required subscription data. Returns an array of
+ * Parse the DOM to find the required subscription data.
+ * Returns an array of objects containing subscription info.
  *
  * @param {object} document - a JSDOM document instance
  * @return array
